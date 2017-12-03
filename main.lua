@@ -1,8 +1,3 @@
-_require = require
-function require(f)
-  require(pwd..f..".lua")
-end
-
 function table.find(t,value)
   for k,v in pairs(t) do
     if v == value then
@@ -15,16 +10,15 @@ end
 pwd = io.popen("echo %cd%"):read('*l').."\\src\\"
 dayList = {}
 
-for fileName in io.popen([[dir "]]..pwd..[[" /B /AD]]):lines() do
-  if string.match(fileName,"Day [0-9]+") then
-    table.insert(dayList, fileName)
-  end
-end
-
 repeat
   repeat
     io.write("What day do you want to solve? ")
-    day = io.read()
+    day,star = io.read(),""
+    for fileName in io.popen([[dir "]]..pwd..[[" /B /AD]]):lines() do
+      if string.match(fileName,"Day [0-9]+") then
+        table.insert(dayList, fileName)
+      end
+    end
     if string.match(day,"%d+[-.]%d+") then
       if string.find(day,"-") then
         star = string.sub(day,string.find(day,"-")+1)
@@ -37,7 +31,6 @@ repeat
       star = 1
     end
   until tonumber(day) ~= nil or day == "exit"
-
   local dayFolder = "Day "..day
   if table.find(dayList,dayFolder) then
     print()
