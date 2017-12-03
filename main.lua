@@ -1,42 +1,38 @@
-function table.find(t,value)
-  for k,v in pairs(t) do
-    if v == value then
-      return k
-    end
-  end
-  return false
+_loadfile = loadfile
+function loadfile(file)
+  return _loadfile(pwd..file)
 end
 
-pwd = io.popen("echo %cd%"):read('*l').."\\src\\"
-dayList = {}
+_dofile = dofile
+function dofile(file)
+  return _dofile(pwd..file)
+end
+
+--------CODE--------
+
+pwd = string.gsub(io.popen("echo %cd%"):read('*l').."\\src\\","\\","/")
+dofile("utils.lua")
+local dayList,args,input = {},{},""
 
 repeat
   repeat
     io.write("What day do you want to solve? ")
-    day,star = io.read(),""
+    input = io.read()
     for fileName in io.popen([[dir "]]..pwd..[[" /B /AD]]):lines() do
       if string.match(fileName,"Day [0-9]+") then
         table.insert(dayList, fileName)
       end
     end
-    if string.match(day,"%d+[-.]%d+") then
-      if string.find(day,"-") then
-        star = string.sub(day,string.find(day,"-")+1)
-        day = string.sub(day,1,string.find(day,"-")-1)
-      elseif string.find(day,".") then
-        star = string.sub(day,string.find(day,"%.")+1)
-        day = string.sub(day,1,string.find(day,"%.")-1)
-      end
-    elseif string.match(day, "%d+") then
-      star = 1
+    args = string.cut(input," ")
+  until tonumber(args[1]) ~= nil or args[1] == "exit"
+  if args[1] ~= "exit" then
+    local dayFolder = "Day "..args[1]
+    if table.find(dayList,dayFolder) then
+      io.write("\n")
+      xpcall(loadfile(dayFolder.."/main.lua"),print,table.unpack(args,2))
+    else
+      print("That day has not yet been solved.")
     end
-  until tonumber(day) ~= nil or day == "exit"
-  local dayFolder = "Day "..day
-  if table.find(dayList,dayFolder) then
-    print()
-    xpcall(loadfile(pwd..dayFolder.."/main.lua"),print,star)
-  elseif tonumber(day) ~= nil then
-    print("This day has not yet been solved.")
+    io.write("\n")
   end
-  print()
 until day == "exit"

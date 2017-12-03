@@ -3,7 +3,7 @@ function getParameters(n)
   if (d)%2 == 0 then
     d = d+1
   end
-  local pic,dfs,man = 0,0,1 -- pic: position in circumference, dfs: distance from straight line, man: manhattan distance
+  local pic,dfs,man = 0,0,0 -- pic: position in circumference, dfs: distance from straight line, man: manhattan distance
   if d > 1 then
     pic = n-((d-2)^2+1)
     dfs = (pic%(d-1)+2)-math.ceil(d/2)
@@ -12,15 +12,22 @@ function getParameters(n)
   return d, pic, dfs, man
 end
 
-local input = 0
-repeat
-  io.write("Input: ")
-  input = tonumber(io.read()) -- default: 312051
-until input ~= nil and input >= 1
+-----------Start----------
+
+local args,input = {...},0
+if tonumber(args[1]) ~= nil then
+  input = tonumber(args[1])
+else
+  repeat
+    io.write("Input: ")
+    input = tonumber(io.read()) -- default: 312051
+  until input ~= nil and input >= 1
+end
 
 ----------Part 1----------
-local dump,dump,dump,manhattan = getParameters(input)
-print("Part 1: "..manhattan.." steps")
+local s,dump,dump,dump,manhattan = "",getParameters(input)
+if manhattan > 1 then s = "s" end
+print("Part 1: "..manhattan.." step"..s)
 
 ----------Part 2----------
 local memory = {x0={y0=1}}
