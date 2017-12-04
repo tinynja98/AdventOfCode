@@ -1,4 +1,3 @@
 # Advent Of Code
 
-[Advent of Code](http://adventofcode.com) is a series of small programming puzzles for a variety of skill levels. They are self-contained and are just as appropriate for an expert who wants to stay sharp as they are for a beginner who is just learning to code. Each puzzle calls upon different skills and has two parts that build on a theme.
-
+[Advent of Code](http://adventofcode.com) is a daily series of small programming puzzles for a variety of skill levels for the month of december, each day supposedly getting harder. This is my attempt at solving these puzzles using **Lua**.
