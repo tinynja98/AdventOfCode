@@ -11,7 +11,7 @@ end
 --------CODE--------
 
 pwd = string.gsub(io.popen("echo %cd%"):read('*l').."\\","\\","/")
-dofile("utils.lua")
+_dofile(string.sub(pwd,1,string.find(pwd,"2017")-1).."/utils.lua")
 local dayList,args,input = {},{},""
 
 repeat
