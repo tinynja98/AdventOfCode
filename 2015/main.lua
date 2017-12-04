@@ -9,8 +9,9 @@ function dofile(file)
 end
 
 --------CODE--------
-local pwdComplement = debug.getinfo(1).source:sub(2)
-pwd = string.gsub(io.popen("echo %cd%"):read('*l').."\\","\\","/")..string.sub(pwdComplement,0,string.find(pwdComplement,"main.lua")-1)
+pwd = string.upper(io.popen("echo %cd%"):read('*l').."\\")
+local pwdComplement = string.gsub(string.upper(debug.getinfo(1).source:sub(2)),pwd,"")
+pwd = string.gsub(pwd..string.sub(pwdComplement,0,string.find(pwdComplement,"MAIN.LUA")-1),"\\","/")
 _dofile(string.sub(pwd,1,string.find(pwd,"2015")-1).."/utils.lua")
 local dayList,args,input = {},{},""
 
