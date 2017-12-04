@@ -8,7 +8,8 @@ function dofile(file)
   return _dofile(pwd..file)
 end
 
---------CODE--------
+----------CODE----------
+
 pwd = string.upper(io.popen("echo %cd%"):read('*l').."\\")
 local pwdComplement = string.gsub(string.upper(debug.getinfo(1).source:sub(2)),pwd,"")
 pwd = string.gsub(pwd..string.sub(pwdComplement,0,string.find(pwdComplement,"MAIN.LUA")-1),"\\","/")
