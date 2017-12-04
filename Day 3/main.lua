@@ -36,9 +36,9 @@ local i,x,y,sidePlusMinus = 1,0,0,{1,1,-1,-1}
 repeat
   i = i+1
   local diameter,posInCir,disFromStraight = getParameters(i)
-  local side = math.floor(posInCir/(diameter-1))
+  local side = math.floor(posInCir/(diameter-1)) -- right=0, top=1, left=2, bottom=3
   if side%2 == 0 then
-    x = math.floor(diameter/2)*sidePlusMinus[side+1]+1-1 -- gets rid of -0
+    x = math.floor(diameter/2)*sidePlusMinus[side+1]+1-1 -- +1-1 gets rid of "-0", cuz "x0" ~= "x-0"
     y = disFromStraight*sidePlusMinus[side+1]+1-1
   else
     x = disFromStraight*sidePlusMinus[(side+2)%4+1]+1-1
