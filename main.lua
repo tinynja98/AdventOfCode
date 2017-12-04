@@ -10,7 +10,7 @@ end
 
 --------CODE--------
 
-pwd = string.gsub(io.popen("echo %cd%"):read('*l').."\\src\\","\\","/")
+pwd = string.gsub(io.popen("echo %cd%"):read('*l').."\\","\\","/")
 dofile("utils.lua")
 local dayList,args,input = {},{},""
 

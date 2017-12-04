@@ -5,7 +5,7 @@ function getParameters(n)
   end
   local pic,dfs,man = 0,0,0 -- pic: position in circumference, dfs: distance from straight line, man: manhattan distance
   if d > 1 then
-    pic = n-((d-2)^2+1)
+    pic = math.floor(n-((d-2)^2+1)) -- exponentiation weirdly adds ".0" to the number, so floor solves this
     dfs = (pic%(d-1)+2)-math.ceil(d/2)
     man = math.floor(d/2)+math.abs(dfs)
   end
