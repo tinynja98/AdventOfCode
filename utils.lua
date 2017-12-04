@@ -20,4 +20,3 @@ function string.cut(s,pattern)
   until i2 == string.len(s)+1
   return cutstring
 end
-
