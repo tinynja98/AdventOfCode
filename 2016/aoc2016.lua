@@ -19,7 +19,7 @@ end
 local pwd1 = (io.popen("echo %cd%"):read("*l")):gsub("\\","/")
 local pwd2 = debug.getinfo(1).source:sub(2):gsub("\\","/")
 local pwd = ""
-if pwd2:match("%a:/") then
+if pwd2:sub(2,3) == ":/" then
 	pwd = pwd2:sub(1,pwd2:find("[^/]*%.lua")-1)
 else
 	local path1 = string.cut(pwd1:sub(4),"/")
