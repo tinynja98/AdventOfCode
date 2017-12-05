@@ -1,17 +1,13 @@
-local args = {...}
+local pwd = (io.popen("echo %cd%"):read('*l').."\\") --C:\Dev\AdventOfCode
+local pwdComp = debug.getinfo(1).source --@2017\main.lua
+local p3,p4 = pwdComp:find("main.lua")
+local p1,p2 = pwdComp:upper():find(pwd:upper())
+if not p2 then p2 = 1 end
+pwd = (pwd..pwdComp:sub(p2+1,p3-1)):gsub("\\","/")
 
-_loadfile = loadfile
-function loadfile(file)
-  return _loadfile(pwd..file)
-end
-
-_dofile = dofile
-function dofile(file)
-  return _dofile(pwd..file)
-end
+dofile(pwd.."utils.lua")
 
 ----------CODE----------
-
 
 repeat
   repeat

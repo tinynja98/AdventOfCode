@@ -1,3 +1,5 @@
+local pwd = getScriptDir()
+
 function resolve(number,jump)
   local result = 0
   for i = 1,string.len(number) do
