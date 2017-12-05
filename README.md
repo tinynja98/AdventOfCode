@@ -4,7 +4,7 @@
 
 You can either run _main.lua_ or _YEAR/aocYEAR.lua_
 
-**Note:** I have written this project on Windows, so you will have to change a few lines if you want to use it on another OS...
+**Note:** I have written this project on Windows, so you will have to change a few lines if you want to use it on another OS, specifically...
 
 main.lua:
  * line 21 `io.popen("echo %cd%")`
