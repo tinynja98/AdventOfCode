@@ -1,40 +1,40 @@
-_loadfile = loadfile
-function loadfile(file)
-  return _loadfile(pwd..file)
+function string.cut(s,pattern)
+	if pattern == nil then
+		pattern = " "
+	end
+	local cutstring = {}
+	local i1 = 0
+	repeat
+		i2 = nil
+		local i2 = string.find(s,pattern,i1+1)
+		if i2 == nil then
+			i2 = string.len(s)+1
+		end
+		table.insert(cutstring,string.sub(s,i1+1,i2-1))
+		i1 = i2
+	until i2 == string.len(s)+1
+	return cutstring
 end
 
-_dofile = dofile
-function dofile(file)
-  return _dofile(pwd..file)
+local pwd1 = (io.popen("echo %cd%"):read("*l")):gsub("\\","/")
+local pwd2 = debug.getinfo(1).source:sub(2):gsub("\\","/")
+local pwd = ""
+if pwd2:match("%a:/") then
+	pwd = pwd2:sub(1,pwd2:find("[^/]*%.lua")-1)
+else
+	local path1 = string.cut(pwd1:sub(4),"/")
+	local path2 = string.cut(pwd2,"/")
+	for i = 1,#path2-1 do
+		if path2[i] == ".." then
+			table.remove(path1)
+		else
+			table.insert(path1,path2[i])
+		end
+	end
+	pwd = pwd1:sub(1,3)
+	for i = 1,#path1 do
+		pwd = pwd..path1[i].."/"
+	end
 end
 
-----------CODE----------
-
-pwd = string.upper(io.popen("echo %cd%"):read('*l').."\\")
-local pwdComplement = string.gsub(string.upper(debug.getinfo(1).source:sub(2)),pwd,"")
-pwd = string.gsub(pwd..string.sub(pwdComplement,0,string.find(pwdComplement,"MAIN.LUA")-1),"\\","/")
-_dofile(string.sub(pwd,1,string.find(pwd,"2016")-1).."/utils.lua")
-local dayList,inputs,read = {},{},""
-
-repeat
-  repeat
-    io.write("What day do you want to solve? ")
-    read = io.read()
-    for fileName in io.popen([[dir "]]..pwd..[[" /B /AD]]):lines() do
-      if string.match(fileName,"Day [0-9]+") then
-        table.insert(dayList, fileName)
-      end
-    end
-    inputs = string.cut(read," ")
-  until tonumber(inputs[1]) ~= nil or inputs[1] == "exit"
-  if inputs[1] ~= "exit" then
-    local dayFolder = "Day "..inputs[1]
-    if table.find(dayList,dayFolder) then
-      io.write("\n")
-      xpcall(loadfile(dayFolder.."/main.lua"),print,table.unpack(inputs,2))
-    else
-      print("That day has not yet been solved.")
-    end
-    io.write("\n")
-  end
-until inputs[1] == "exit"
+loadfile(pwd:sub(1,pwd:find("2016")-1).."main.lua")(2016)

@@ -37,4 +37,4 @@ else
 	end
 end
 
-loadfile(pwd:sub(1,pwd:find("2015")-1).."main.lua")(2015)
+print(io.popen("if exist \""..pwd.."2017/Day 5/day5.lua\" echo true"):read("*l"))

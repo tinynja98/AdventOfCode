@@ -1,6 +1,7 @@
+local pwd = getScriptDir(debug.getinfo(1).source)
 local validPass1,validPass2 = 0,0
 
-for l in io.lines(pwd.."Day 4/Input.txt") do
+for l in io.lines(pwd.."input.txt") do
   local words,sortedWords = string.cut(l," "),{}
   local valid1,valid2 = true,true
   for i1 = 1,#words do

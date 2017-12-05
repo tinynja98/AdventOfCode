@@ -1,7 +1,8 @@
-local pwd = getScriptDir()
+local pwd = getScriptDir(debug.getinfo(1).source)
 
 function resolve(number,jump)
-  local result = 0
+	local result = 0
+	if jump%1 ~= 0 then return "bad argument #2 to 'resolve' (jump must be an integer)" end
   for i = 1,string.len(number) do
     local next = (i-1+jump)%string.len(number)+1
     if tonumber(string.sub(number,i,i)) == tonumber(string.sub(number,next,next)) then
@@ -14,11 +15,11 @@ end
 local args,input = {...},0
 if tonumber(args[1]) ~= nil  then
   input = args[1]
-elseif tonumber(io.open(pwd.."Day 1/Input.txt"):read("*a")) ~= nil then
+elseif tonumber(io.open(pwd.."input.txt"):read("*a")) ~= nil then
   if args[1] ~= nil then
     print("\""..args[1].."\" is not a number. Using number in \"Input.txt\".")
   end
-  input = io.open(pwd.."Day 1/Input.txt"):read("*a")
+  input = io.open(pwd.."input.txt"):read("*a")
 else
   print("Invalid number in \"Input.txt\".")
   repeat

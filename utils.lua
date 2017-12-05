@@ -1,3 +1,14 @@
+function toboolean(v)
+	if type(v) == "boolean" then
+		return v
+	elseif type(v) == "number" then
+		if v == 1 then return true end
+	elseif type(v) == "string" then
+		if v == "true" then return true end
+	end
+	return false
+end
+
 function table.find(t,value)
   for k,v in pairs(t) do
     if v == value then
@@ -21,12 +32,29 @@ function string.cut(s,pattern)
   return cutstring
 end
 
-function getScriptDir()
-  local pwd = (io.popen("echo %cd%"):read('*l').."\\") --C:\Dev\AdventOfCode
-  local pwdComp = debug.getinfo(1).source --@2017\main.lua
-  local p3,p4 = pwdComp:find("main.lua")
-  local p1,p2 = pwdComp:upper():find(pwd:upper())
-  if not p2 then p2 = 1 end
-  pwd = (pwd..pwdComp:sub(p2+1,p3-1)):gsub("\\","/")
-  return pwd
+function getScriptDir(source)
+	if source == nil then
+		source = debug.getinfo(1).source
+	end
+	local pwd1 = (io.popen("echo %cd%"):read("*l")):gsub("\\","/")
+	local pwd2 = source:sub(2):gsub("\\","/")
+	local pwd = ""
+	if pwd2:sub(2,3) == ":/" then
+		pwd = pwd2:sub(1,pwd2:find("[^/]*%.lua")-1)
+	else
+		local path1 = string.cut(pwd1:sub(4),"/")
+		local path2 = string.cut(pwd2,"/")
+		for i = 1,#path2-1 do
+			if path2[i] == ".." then
+				table.remove(path1)
+			else
+				table.insert(path1,path2[i])
+			end
+		end
+		pwd = pwd1:sub(1,3)
+		for i = 1,#path1 do
+			pwd = pwd..path1[i].."/"
+		end
+	end
+	return pwd
 end

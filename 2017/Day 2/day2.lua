@@ -1,17 +1,6 @@
-function string.cut(s,pattern)
-  local cutstring = {}
-  local i1 = 0
-  repeat
-    i2 = nil
-    local i2 = string.find(s,pattern,i1+1)
-    if i2 == nil then i2 = string.len(s)+1 end
-    table.insert(cutstring,string.sub(s,i1+1,i2-1))
-    i1 = i2
-  until i2 == string.len(s)+1
-  return cutstring
-end
+local pwd = getScriptDir(debug.getinfo(1).source)
 
-local input = io.open(pwd.."Day 2/Input.txt"):read("*a")
+local input = io.open(pwd.."input.txt"):read("*a")
 local data = string.cut(input,"\n")
 local result1,result2 = 0,0
 
@@ -42,4 +31,4 @@ for i = 1,#data do
 end
 
 print("Part1: "..result1)
-print("Part2: "..result2)
+print("Part2: "..math.floor(result2))
