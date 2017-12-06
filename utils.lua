@@ -28,7 +28,8 @@ function string.cut(s,pattern)
     if i2 == nil then i2 = string.len(s)+1 end
     table.insert(cutstring,string.sub(s,i1+1,i2-1))
     i1 = i2
-  until i2 == string.len(s)+1
+	until i2 == string.len(s)+1
+	if #cutstring == 0 then table.insert(cutstring,s) end
   return cutstring
 end
 
