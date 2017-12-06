@@ -12,12 +12,12 @@ function resolve(number,jump)
   return result
 end
 
-local args,input = {...},0
-if tonumber(args[1]) ~= nil  then
-  input = args[1]
+local input = 0
+if tonumber(arg[1]) ~= nil  then
+  input = arg[1]
 elseif tonumber(io.open(pwd.."input.txt"):read("*a")) ~= nil then
-  if args[1] ~= nil then
-    print("\""..args[1].."\" is not a number. Using number in \"Input.txt\".")
+  if arg[1] ~= nil then
+    print("\""..arg[1].."\" is not a number. Using number in \"Input.txt\".")
   end
   input = io.open(pwd.."input.txt"):read("*a")
 else
