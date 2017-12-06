@@ -86,7 +86,7 @@ repeat
 		end
     local dayFolder = "Day "..inputs[1]
     if table.find(dayList,dayFolder) and io.popen("if exist \""..pwd..year.."/"..dayFolder.."/day"..inputs[1]..".lua\" echo true"):read("*l") then
-      io.write("\n")
+			io.write("\n")
       xpcall(loadfile(pwd..year.."/"..dayFolder.."/day"..inputs[1]..".lua"),print,table.unpack(inputs,2))
     else
       print("That day has not yet been solved.")

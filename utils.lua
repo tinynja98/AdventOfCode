@@ -9,6 +9,15 @@ function toboolean(v)
 	return false
 end
 
+_tonumber = tonumber
+function tonumber(...)
+	local args,numbers = {...},{}
+	for i = 1,#args do
+		table.insert(numbers,_tonumber(args[i]))
+	end
+	return table.unpack(numbers)
+end
+
 function table.find(t,value)
 	local mink = math.huge
   for k,v in pairs(t) do
