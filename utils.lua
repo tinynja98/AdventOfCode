@@ -10,12 +10,17 @@ function toboolean(v)
 end
 
 function table.find(t,value)
+	local mink = math.huge
   for k,v in pairs(t) do
-    if v == value then
-      return k
+		if v == value then
+			mink = math.min(mink,k)
     end
-  end
-  return false
+	end
+	if mink ~= math.huge then
+		return mink
+	else
+		return false
+	end
 end
 
 function string.cut(s,pattern)
