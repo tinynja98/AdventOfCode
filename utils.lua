@@ -1,3 +1,9 @@
+if utils then
+	io.write("Reloaded utils.lua.\n")
+else
+	utils = true
+end
+
 function toboolean(v)
 	if type(v) == "boolean" then
 		return v
@@ -9,7 +15,7 @@ function toboolean(v)
 	return false
 end
 
-_tonumber = tonumber
+if _tonumber == nil then _tonumber = tonumber end
 function tonumber(...)
 	local args,numbers = {...},{}
 	for i = 1,#args do
@@ -32,18 +38,22 @@ function table.find(t,value)
 	end
 end
 
-function string.cut(s,pattern)
+function string.cut(s,pattern,remove,i)
+	local i2 = 0
+	if remove == nil then remove = true end
   if pattern == nil then pattern = " " end
-  local cutstring = {}
-  local i1 = 0
-  repeat
-    i2 = nil
-    local i2 = string.find(s,pattern,i1+1)
-    if i2 == nil then i2 = string.len(s)+1 end
-    table.insert(cutstring,string.sub(s,i1+1,i2-1))
-    i1 = i2
-	until i2 == string.len(s)+1
-	if #cutstring == 0 then table.insert(cutstring,s) end
+	if tonumber(i) ~= nil then i2 = i-1 end
+	local cutstring = {}
+	repeat
+		local i1 = i2
+    i2 = s:find(pattern,i1+1)
+		if i2 == nil then i2 = s:len()+1 end
+		if remove then
+			table.insert(cutstring,s:sub(i1+1,i2-1))
+		else
+			table.insert(cutstring,s:sub(i1,i2-1))
+		end
+	until i2 == s:len()+1
   return cutstring
 end
 

@@ -1,6 +1,16 @@
-args = {...}
+local args = {...}
 
-function string.cut(s,pattern)
+local function parseError(msg)
+	if msg:match("exit") or msg:match("interrupted!") then
+		return true
+	elseif not msg:match("reload") then
+		print(msg)
+	end
+	io.write("\n")
+	return false
+end
+
+local function cut(s,pattern)
 	if pattern == nil then
 		pattern = " "
 	end
@@ -24,8 +34,8 @@ local pwd = ""
 if pwd2:sub(2,3) == ":/" then
 	pwd = pwd2:sub(1,pwd2:find("[^/]*%.lua")-1)
 else
-	local path1 = string.cut(pwd1:sub(4),"/")
-	local path2 = string.cut(pwd2,"/")
+	local path1 = cut(pwd1:sub(4),"/")
+	local path2 = cut(pwd2,"/")
 	for i = 1,#path2-1 do
 		if path2[i] == ".." then
 			table.remove(path1)
@@ -39,58 +49,8 @@ else
 	end
 end
 
-dofile(pwd.."utils.lua")
-
-----------CODE----------
+cut = nil
 
 repeat
-  local yearList,dayList,inputs,read,year,exit = {},{},{},"","",false
-  if args[1] == nil then
-    repeat
-      io.write("What year's puzzles are we solving? ")
-      read = io.read()
-      inputs = string.cut(read)
-      if tonumber(inputs[1]) ~= nil then
-        for dirName in io.popen("dir \""..pwd.."\" /B /AD"):lines() do
-          if dirName:match("[0-9]+") then
-            table.insert(yearList,dirName)
-          end
-        end
-			end
-			if inputs[1] == "exit" then
-				exit = true
-			elseif not table.find(yearList,inputs[1]) then
-				io.write("That year has not yet been solved.\n\n")
-			end
-    until (tonumber(inputs[1]) ~= nil and table.find(yearList,inputs[1])) or exit
-    year = inputs[1]
-    table.remove(inputs,1)
-  else
-    year = args[1]
-  end
-  if (inputs[1] == nil or tonumber(inputs[1]) == nil) and not exit then
-    repeat
-      io.write("What day do you want to solve? ")
-      read = io.read()
-			inputs = string.cut(read)
-			if inputs[1] == "exit" then
-				exit = true
-			end
-    until tonumber(inputs[1]) ~= nil or exit
-	end
-	if not exit then
-		for dirName in io.popen("dir \""..pwd..year.."\" /B /AD"):lines() do
-			if string.match(dirName,"Day [0-9]+") then
-				table.insert(dayList,dirName)
-			end
-		end
-    local dayFolder = "Day "..inputs[1]
-    if table.find(dayList,dayFolder) and io.popen("if exist \""..pwd..year.."/"..dayFolder.."/day"..inputs[1]..".lua\" echo true"):read("*l") then
-			io.write("\n")
-      xpcall(loadfile(pwd..year.."/"..dayFolder.."/day"..inputs[1]..".lua"),print,table.unpack(inputs,2))
-    else
-      print("That day has not yet been solved.")
-    end
-    io.write("\n")
-  end
-until exit
+	local dump,exit = xpcall(loadfile(pwd.."loader.lua"),parseError,table.unpack(args,2))
+until	exit

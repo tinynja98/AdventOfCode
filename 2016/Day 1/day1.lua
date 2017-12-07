@@ -6,7 +6,7 @@ local orientationX,orientationY,orientation = {0,1,0,-1},{1,0,-1,0},1 --north,ea
 locations["0,0"] = 1
 
 function validateInstructions(s)
-	local inst = string.cut(s:gsub(" ",""),",")
+	local inst = string.cut(s:gsub(" ",""):gsub(",",""),"[RL]",false,2)
 	for i = 1,#inst do
 		if not inst[i]:match("[RL]%d+") then
 			return false
@@ -31,16 +31,17 @@ if file and file:read("*l") ~= nil then
 	file:close()
 end
 
-if argument and validateInstructions(argument) then
+if argument ~= "" and validateInstructions(argument) then
 	input = argument
 elseif input == "" then
 	repeat
 		io.write("Input: ")
 		input = io.read()
+		if input == "exit" then error("exit") end
 	until validateInstructions(input)
 end
 
-input = string.cut(input:gsub(" ",""),",")
+input = string.cut(input:gsub(" ",""):gsub(",",""),"[RL]",false,2)
 for i1 = 1,#input do
 	if input[i1]:sub(1,1) == "R" then
 		orientation = orientation%4+1

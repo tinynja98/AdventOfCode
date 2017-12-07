@@ -1,4 +1,4 @@
-function string.cut(s,pattern)
+local function cut(s,pattern)
 	if pattern == nil then
 		pattern = " "
 	end
@@ -22,8 +22,8 @@ local pwd = ""
 if pwd2:sub(2,3) == ":/" then
 	pwd = pwd2:sub(1,pwd2:find("[^/]*%.lua")-1)
 else
-	local path1 = string.cut(pwd1:sub(4),"/")
-	local path2 = string.cut(pwd2,"/")
+	local path1 = cut(pwd1:sub(4),"/")
+	local path2 = cut(pwd2,"/")
 	for i = 1,#path2-1 do
 		if path2[i] == ".." then
 			table.remove(path1)
@@ -37,4 +37,6 @@ else
 	end
 end
 
-loadfile(pwd:sub(1,pwd:find("2016")-1).."main.lua")(2016)
+cut = nil
+
+loadfile(pwd:sub(1,pwd:find("2016")-1).."loader.lua")(2016)
