@@ -10,7 +10,6 @@ local function parseError(msg)
 	return false
 end
 
-
 local function cut(s,pattern,remove,i)
 	local i2 = 0
 	if remove == nil then remove = true end
@@ -54,5 +53,5 @@ end
 cut = nil
 
 repeat
-	local dump,exit = xpcall(loadfile(pwd.."loader.lua"),parseError,table.unpack(args,2))
+	local dump,exit = xpcall(loadfile(pwd.."loader.lua"),parseError,table.unpack(args,1))
 until	exit
