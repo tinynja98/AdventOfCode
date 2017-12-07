@@ -1,4 +1,4 @@
-args = {...}
+local args,pwd = {...},""
 
 local function cut(s,pattern,remove,i)
 	local i2 = 0
@@ -19,9 +19,17 @@ local function cut(s,pattern,remove,i)
   return cutstring
 end
 
+local function parseError(msg)
+	if msg:match("reload") then
+		return "reload"
+	elseif not msg:match("exit") then
+		print(msg)
+	end
+end
+
 local pwd1 = (io.popen("echo %cd%"):read("*l")):gsub("\\","/")
 local pwd2 = debug.getinfo(1).source:sub(2):gsub("\\","/")
-local pwd = ""
+
 if pwd2:sub(2,3) == ":/" then
 	pwd = pwd2:sub(1,pwd2:find("[^/]*%.lua")-1)
 else
@@ -94,7 +102,8 @@ repeat
     local dayFolder = "Day "..inputs[1]
     if table.find(dayList,dayFolder) and io.popen("if exist \""..pwd..year.."/"..dayFolder.."/day"..inputs[1]..".lua\" echo true"):read("*l") then
 			io.write("\n")
-      xpcall(loadfile(pwd..year.."/"..dayFolder.."/day"..inputs[1]..".lua"),print,table.unpack(inputs,2))
+			local dump,result = xpcall(loadfile(pwd..year.."/"..dayFolder.."/day"..inputs[1]..".lua"),parseError,table.unpack(inputs,2))
+			if result == "reload" then error("reload") end
     else
       print("That day has not yet been solved.")
     end

@@ -38,9 +38,9 @@ function table.find(t,value)
 	end
 end
 
-function string.cut(s,pattern,remove,i)
+function string.cut(s,pattern,remPattern,i)
 	local i2 = 0
-	if remove == nil then remove = true end
+	if remPattern == nil then remPattern = true end
   if pattern == nil then pattern = " " end
 	if tonumber(i) ~= nil then i2 = i-1 end
 	local cutstring = {}
@@ -48,7 +48,7 @@ function string.cut(s,pattern,remove,i)
 		local i1 = i2
     i2 = s:find(pattern,i1+1)
 		if i2 == nil then i2 = s:len()+1 end
-		if remove then
+		if remPattern then
 			table.insert(cutstring,s:sub(i1+1,i2-1))
 		else
 			table.insert(cutstring,s:sub(i1,i2-1))
@@ -61,9 +61,9 @@ function getScriptDir(source)
 	if source == nil then
 		source = debug.getinfo(1).source
 	end
+	local pwd = ""
 	local pwd1 = (io.popen("echo %cd%"):read("*l")):gsub("\\","/")
 	local pwd2 = source:sub(2):gsub("\\","/")
-	local pwd = ""
 	if pwd2:sub(2,3) == ":/" then
 		pwd = pwd2:sub(1,pwd2:find("[^/]*%.lua")-1)
 	else
