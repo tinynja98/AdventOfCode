@@ -10,22 +10,24 @@ local function parseError(msg)
 	return false
 end
 
-local function cut(s,pattern)
-	if pattern == nil then
-		pattern = " "
-	end
+
+local function cut(s,pattern,remove,i)
+	local i2 = 0
+	if remove == nil then remove = true end
+  if pattern == nil then pattern = " " end
+	if tonumber(i) ~= nil then i2 = i-1 end
 	local cutstring = {}
-	local i1 = 0
 	repeat
-		i2 = nil
-		local i2 = string.find(s,pattern,i1+1)
-		if i2 == nil then
-			i2 = string.len(s)+1
+		local i1 = i2
+    i2 = s:find(pattern,i1+1)
+		if i2 == nil then i2 = s:len()+1 end
+		if remove then
+			table.insert(cutstring,s:sub(i1+1,i2-1))
+		else
+			table.insert(cutstring,s:sub(i1,i2-1))
 		end
-		table.insert(cutstring,string.sub(s,i1+1,i2-1))
-		i1 = i2
-	until i2 == string.len(s)+1
-	return cutstring
+	until i2 == s:len()+1
+  return cutstring
 end
 
 local pwd1 = (io.popen("echo %cd%"):read("*l")):gsub("\\","/")
