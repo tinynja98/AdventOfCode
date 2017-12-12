@@ -12,28 +12,6 @@ function toboolean(v)
 	return false
 end
 
-if _tostring == nil then _tostring = tostring end
-function tostring(...)
-	local args,strings = {...},{}
-	for i = 1,#args do
-		table.insert(strings,_tostring(args[i]))
-	end
-	if #strings > 0 then
-		return table.unpack(strings)
-	else
-		return "nil"
-	end
-end
-
-if _tonumber == nil then _tonumber = tonumber end
-function tonumber(...)
-	local args,numbers = {...},{}
-	for i = 1,#args do
-		table.insert(numbers,_tonumber(args[i]))
-	end
-	return table.unpack(numbers)
-end
-
 if string._byte == nil then string._byte = string.byte end
 function string.byte(s,i,j)
 	local ascii = {string._byte(s,i,j)}
@@ -67,10 +45,15 @@ function alphabetical(s1,s2,returnstring)
 	if returnstring then t,f = s1,s2
 	else t,f = true,false
 	end
-	if not tostring(s1) and not tostring(s2) then return f
-	elseif not tostring(s2) then return t
-	elseif not tostring(s1) then return f
-	else s1,s2 = tostring(s1,s2)
+	if not tostring(s1) and not tostring(s2) then
+		return f
+	elseif not tostring(s2) then
+		return t
+	elseif not tostring(s1) then
+		return f
+	else
+		s1 = tostring(s1)
+		s2 = tostring(s2)
 	end
 	local low1,low2 = s1:lower(),s2:lower()
 	local i = 0
@@ -79,7 +62,8 @@ function alphabetical(s1,s2,returnstring)
 		local l1,l2 = low1:byte(i,i),low2:byte(i,i)
 		local r1,r2 = s1:byte(i,i),s2:byte(i,i)
 		if tonumber(low1:sub(i,i)) ~= nil and tonumber(low2:sub(i,i)) ~= nil then
-			l1,l2 = tonumber(low1:match("%d+",i),low2:match("%d+",i))
+			l1 = tonumber(low1:match("%d+",i))
+			l2 = tonumber(low2:match("%d+",i))
 			i = math.max(low1:find("%d+"),low2:find("%d+"))
 		end
 		if l1 < l2 then return t
@@ -93,24 +77,25 @@ end
 
 function table.find(t,value)
 	local indexes = {}
-  for k,v in pairs(t) do
-		if v == value then
-			table.insert(indexes,k)
-		elseif type(v) == "table" then
-			local sufixes = {table.find(t[k],value)}
-			if sufixes[1] ~= false then
-				for i = 1,#sufixes do
-					table.insert(indexes,k.."."..sufixes[i])
+	if t ~= nil and value ~= nil then
+		for k,v in pairs(t) do
+			if v == value then
+				table.insert(indexes,k)
+			elseif type(v) == "table" then
+				local sufixes = {table.find(t[k],value)}
+				if sufixes then
+					for i = 1,#sufixes do
+						table.insert(indexes,k.."."..sufixes[i])
+					end
 				end
 			end
 		end
+		if next(indexes) ~= nil then
+			table.sort(indexes,alphabetical)
+			return table.unpack(indexes)
+		end
 	end
-	table.sort(indexes,alphabetical)
-	if next(indexes) ~= nil then
-		return table.unpack(indexes)
-	else
-		return false
-	end
+	return false
 end
 
 function getScriptDir(source)
