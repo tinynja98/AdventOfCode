@@ -21,7 +21,7 @@ elseif tonumber(io.open(pwd.."input.txt"):read("*a")) ~= nil then
   end
   input = io.open(pwd.."input.txt"):read("*a")
 else
-  print("Invalid number in \"Input.txt\".")
+	print("Invalid number in input.txt: ".."\""..io.open(pwd.."input.txt"):read("*a"):match("[^0-9]+").."\"")
   repeat
     io.write("Input: ")
     input = tonumber(io.read())
