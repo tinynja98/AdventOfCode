@@ -45,3 +45,5 @@ if #inputs == 0 then
 		end
 	until input == "stop" and #inputs > 0
 end
+
+print("Day 7")

@@ -1,5 +1,3 @@
-local args,pwd = {...},""
-
 local function cut(s,pattern,remove,i)
 	local i2 = 0
 	if remove == nil then remove = true end
@@ -27,9 +25,9 @@ local function parseError(msg)
 	end
 end
 
+local pwd = ""
 local pwd1 = (io.popen("echo %cd%"):read("*l")):gsub("\\","/")
 local pwd2 = debug.getinfo(1).source:sub(2):gsub("\\","/")
-
 if pwd2:sub(2,3) == ":/" then
 	pwd = pwd2:sub(1,pwd2:find("[^/]*%.lua")-1)
 else
@@ -50,9 +48,10 @@ end
 
 cut = nil
 
-dofile(pwd.."utils.lua")
 
-----------CODE----------
+------------CODE------------
+local args = {...}
+dofile(pwd.."utils.lua")
 
 repeat
   local yearList,dayList,inputs,read,year,exit = {},{},{},"","",false
@@ -60,7 +59,7 @@ repeat
     repeat
       io.write("What year's puzzles are we solving? ")
       read = io.read()
-      inputs = string.cut(read)
+      inputs = string.cut(read," ")
       if tonumber(inputs[1]) ~= nil then
         for dirName in io.popen("dir \""..pwd.."\" /B /AD"):lines() do
           if dirName:match("[0-9]+") then
@@ -85,7 +84,7 @@ repeat
     repeat
       io.write("What day do you want to solve? ")
       read = io.read()
-			inputs = string.cut(read)
+			inputs = string.cut(read," ")
 			if inputs[1] == "exit" then
 				error("exit")
 			elseif inputs[1] == "reload" then

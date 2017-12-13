@@ -1,5 +1,5 @@
 if utils then io.write("Reloaded utils.lua.\n") end
-local utils = true
+utils = true
 
 function toboolean(v)
 	if type(v) == "boolean" then
@@ -14,7 +14,7 @@ end
 
 if _tostring == nil then _tostring = tostring end
 function tostring(...)
-	local args = table.unpack({...})
+	local args = {table.unpack({...})}
 	local strings = {_tostring(args[1])}
 	for i = 2,#args do
 		table.insert(strings,_tostring(args[i]))
@@ -24,7 +24,7 @@ end
 
 if _tonumber == nil then _tonumber = tonumber end
 function tonumber(...)
-	local args = table.unpack({...})
+	local args = {table.unpack({...})}
 	local numbers = {_tonumber(args[1])}
 	for i = 2,#args do
 		table.insert(numbers,_tonumber(args[i]))
