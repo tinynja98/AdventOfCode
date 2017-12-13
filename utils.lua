@@ -1,6 +1,26 @@
 if utils then io.write("Reloaded utils.lua.\n") end
 local utils = true
 
+if _tostring == nil then _tostring = tostring end
+function tostring(...)
+	local args = {...}
+	local strings = {_tostring(args[1])}
+	for i = 2,#args do
+		table.insert(strings,_tostring(args[i]))
+	end
+	return table.unpack(strings)
+end
+
+if _tonumber == nil then _tonumber = tonumber end
+function tonumber(...)
+	local args = {...}
+	local numbers = {_tonumber(args[1])}
+	for i = 2,#args do
+		table.insert(numbers,_tonumber(args[i]))
+	end
+	return table.unpack(numbers)
+end
+
 function toboolean(v)
 	if type(v) == "boolean" then
 		return v
@@ -22,9 +42,10 @@ function string.byte(s,i,j)
 end
 
 function string.cut(s,pattern,delpattern,i)
+  if type(s) ~= "string" then error("bad argument #1 to 'string.cut' (string expected, got "..type(t)..")") end
+  if type(pattern) ~= "string" then error("bad argument #2 to 'string.cut' (string expected, got "..type(t)..")") end
 	local i2 = 0
 	if delpattern == nil then delpattern = true end
-  if pattern == nil then pattern = " " end
 	if tonumber(i) ~= nil then i2 = i-1 end
 	local cutstring = {}
 	repeat
@@ -41,6 +62,8 @@ function string.cut(s,pattern,delpattern,i)
 end
 
 function alphabetical(s1,s2,returnstring)
+  if type(s1) ~= "string" then error("bad argument #1 to 'alphabetical' (string expected, got "..type(t)..")") end
+  if type(s2) ~= "string" then error("bad argument #2 to 'alphabetical' (string expected, got "..type(t)..")") end
 	local t,f = 0,0
 	if returnstring then t,f = s1,s2
 	else t,f = true,false
@@ -76,6 +99,8 @@ function alphabetical(s1,s2,returnstring)
 end
 
 function table.find(t,value)
+  if type(t) ~= "table" then error("bad argument #1 to 'table.find' (table expected, got "..type(t)..")") end
+  if type(value) == nil then error("bad argument #2 to 'table.find' (value expected, got "..type(value)..")") end
 	local indexes = {}
 	if t ~= nil and value ~= nil then
 		for k,v in pairs(t) do

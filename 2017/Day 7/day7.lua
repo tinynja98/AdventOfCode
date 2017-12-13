@@ -6,20 +6,23 @@ if file then
 		local i = 0
 		for l in file:lines() do
 			i = i+1
-			local editL = l
-			editL = editL:gsub(" ","")
-			table.insert(inputs,editL)
-			if modL:match("%a+\\(%d+\\)->[a-zA-Z,]+") then
-				editL:gsub("%a+\\(%d+\\)->","")
-				repeat
-					if not editL:match("%a+,") and not editL:match("%a+") then
-						print("Syntax error in \"input.txt\" on line #"..i.." ("..l..")")
-						inputs = {}
-						break
-					end
-					editL:gsub("%a+,","",1)
-				until editL:match("%a+")
-			else
+			local modifiedL,validLine = l:gsub(" ",""),true
+			table.insert(inputs,modifiedL) --MOVE THIS
+			if modifiedL:gsub("%a+\\(%d+\\)",""):match(".+") then
+				if modifiedL:match("%a+\\(%d+\\)->[a-zA-Z,]+") then
+					modifiedL:gsub("%a+\\(%d+\\)->","")
+					repeat
+						if not modifiedL:match("%a+,") and not modifiedL:match("%a+") then
+							validLine = false
+							break
+						end
+						modifiedL:gsub("%a+,","",1)
+					until modifiedL:match("%a+")
+				else
+					validLine = false
+				end
+			end
+			if not validLine then
 				print("Syntax error in \"input.txt\" on line #"..i.." ("..l..")")
 				inputs = {}
 				break
@@ -33,10 +36,12 @@ if #inputs == 0 then
 	repeat
 		io.write("Input "..(#inputs+1)..": ")
 		input = io.read()
+		if input == "exit" then error("exit")
+		elseif input == "reload" then error("reload")
+		end
 		input = input:gsub(" ","")
 		if input:match("%a+\\(%d+\\)->[a-zA-Z,]+") then
 			table.insert(inputs,input)
 		end
-	until (input == "stop" and #inputs > 0) or input == "exit" or input == "reload"
+	until input == "stop" and #inputs > 0
 end
-
