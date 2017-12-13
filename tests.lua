@@ -1,15 +1,11 @@
-if _tostring == nil then _tostring = tostring end
-function tostring(...)
-	local args = {...}
-	local strings = {}
-	for i = 1,#args do
-	--local strings = {_tostring(args[1])}
-	--for i = 2,#args do
-		table.insert(strings,_tostring(args[i]))
-	end
-	return table.unpack(strings)
+function test(...)
+	return table.unpack({...})
 end
 
-x = {}
+y = {1,nil,3}
 
-print(next(x))
+for i = 1,#y do
+	print(i,y[i])
+end
+
+print(test("a",nil,"a"))
