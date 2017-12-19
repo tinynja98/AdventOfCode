@@ -10,8 +10,7 @@ local function parseError(msg)
 end
 
 ------------CODE------------
-local args = {...}
-local pwd = getScriptDir(debug.getinfo(1).source)
+local args,pwd = {...},getScriptDir(debug.getinfo(1).source)
 
 repeat
   local yearList,dayList,inputs,read,year,exit = {},{},{},"","",false
@@ -21,7 +20,7 @@ repeat
       read = io.read()
       inputs = string.cut(read," ")
       if tonumber(inputs[1]) ~= nil then
-        for dirName in io.popen("dir \""..pwd.."\" /B /AD"):lines() do
+        for dirName in io.popen("dir \""..rootPath.."\" /B /AD"):lines() do
           if dirName:match("[0-9]+") then
             table.insert(yearList,dirName)
           end
@@ -53,15 +52,15 @@ repeat
     until tonumber(inputs[1]) ~= nil or exit
 	end
 	if not exit then
-		for dirName in io.popen("dir \""..pwd..year.."\" /B /AD"):lines() do
+		for dirName in io.popen("dir \""..rootPath..year.."\" /B /AD"):lines() do
 			if string.match(dirName,"Day [0-9]+") then
 				table.insert(dayList,dirName)
 			end
 		end
     local dayFolder = "Day "..inputs[1]
-    if table.find(dayList,dayFolder) and io.popen("if exist \""..pwd..year.."/"..dayFolder.."/day"..inputs[1]..".lua\" echo true"):read("*l") then
+    if table.find(dayList,dayFolder) and io.popen("if exist \""..rootPath..year.."/"..dayFolder.."/day"..inputs[1]..".lua\" echo true"):read("*l") then
 			io.write("\n")
-			local dump,result = xpcall(loadfile(pwd..year.."/"..dayFolder.."/day"..inputs[1]..".lua"),parseError,table.unpack(inputs,2))
+			local dump,result = xpcall(loadfile(rootPath..year.."/"..dayFolder.."/day"..inputs[1]..".lua"),parseError,table.unpack(inputs,2))
 			if result == "reload" then error("reload") end
     else
       print("That day has not yet been solved.")

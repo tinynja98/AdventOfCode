@@ -57,10 +57,10 @@ local function getScriptDir(source) --requires: cut
 	return pwd
 end
 
-local pwd,cut,getScriptDir = getScriptDir(),nil,nil
+rootPath,cut,getScriptDir = getScriptDir(),nil,nil
 
 repeat
-	xpcall(loadfile(pwd.."path.lua"),parseError)
-	xpcall(loadfile(pwd.."utils.lua"),parseError)
-	local exit = select(2,xpcall(loadfile(pwd.."loader.lua"),parseError,table.unpack(args,1)))
+	xpcall(loadfile(rootPath.."Misc/path.lua"),parseError)
+	xpcall(loadfile(rootPath.."Misc/utils.lua"),parseError)
+	local exit = select(2,xpcall(loadfile(rootPath.."Misc/loader.lua"),parseError,table.unpack(args,1)))
 until	exit
