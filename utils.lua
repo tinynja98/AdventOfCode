@@ -92,13 +92,14 @@ function alphabetical(s1,s2,returnstring)
 	return f
 end
 
-function table.find(t,value)
+function table.find(t,value,kv)
   if type(t) ~= "table" then error("bad argument #1 to 'table.find' (table expected, got "..type(t)..")") end
-  if type(value) == nil then error("bad argument #2 to 'table.find' (value expected, got "..type(value)..")") end
+	if type(value) == nil then error("bad argument #2 to 'table.find' (value expected, got "..type(value)..")") end
+	if type(kv) ~= "string" then kv = "v" end
 	local indexes = {}
 	if t ~= nil and value ~= nil then
 		for k,v in pairs(t) do
-			if v == value then
+			if (kv:match("k") and k == value) or (kv:match("v") and v == value) then
 				table.insert(indexes,k)
 			elseif type(v) == "table" then
 				local sufixes = {table.find(t[k],value)}

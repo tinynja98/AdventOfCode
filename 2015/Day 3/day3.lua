@@ -1,16 +1,7 @@
 local pwd = getScriptDir(debug.getinfo(1).source)
 local file,args,input,xdif,ydif = io.open(pwd.."input.txt"),{...},"",0,0
-local gifts1,x1,y1,houses1 = {{1}},0,0,1
-local gifts2,x2s,y2s,x2r,y2r,houses2 = {{2}},0,0,0,0,1
-
---My OCD is gonna kill me if papa santa
---doesn't start at 0,0 so i have to do this...
-gifts1[0],gifts1[1] = gifts1[1],nil
-gifts1[0][0],gifts1[0][1] = gifts1[0][1],nil
-
-gifts2[0],gifts2[1] = gifts2[1],nil
-gifts2[0][0],gifts2[0][1] = gifts2[0][1],nil
---Much better :)
+local gifts1,x1,y1,houses1 = {[0]={[0]=1}},0,0,1
+local gifts2,x2s,y2s,x2r,y2r,houses2 = {[0]={[0]=2}},0,0,0,0,1
 
 function resolve(t,x,y,h)
 	if t[x] == nil then
