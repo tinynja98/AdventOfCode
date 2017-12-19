@@ -13,6 +13,6 @@ _Misc/main.lua_:
  * line 40 `pwd2:sub(2,3) == ":/"`
 
 _Misc/loader.lua_:
- * line 24 `io.popen("dir \""..pwd.."\" /B /AD")`
- * line 56 `io.popen("dir \""..pwd..year.."\" /B /AD")`
- * line 62 `io.popen("if exist \""..pwd..year.."/"..dayFolder.."/day"..inputs[1]..".lua\" echo true")`
+ * line 14 `io.popen("if exist \""..rootPath..y.."\" echo true")`
+ * line 16 `io.popen("dir \""..rootPath..y.."\" /b /ad")`
+ * line 35 `io.popen("if exist \""..rootPath..y.."/Day "..d.."/day"..d..".lua\" echo true")`
