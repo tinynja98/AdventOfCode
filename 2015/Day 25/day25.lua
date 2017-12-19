@@ -1,18 +1,26 @@
 local args = {...}
-local sheet,xCur,yCur,xMax,yMax,input,row,column = {{20151125}},1,1,1,1,"",3010,3019 -- sheet = {y={x=n}}
+local sheet,xCur,yCur,xMax,yMax,input,row,column = {{20151125}},1,1,1,1,"3010,3019",0,0 -- sheet = {y={x=n}}
 
 if tonumber(args[1]) ~= nil and tonumber(args[2]) ~= nil then
-	input = args[1].." "..args[2]
-else
+	input = args[1]..","..args[2]
+elseif args[1] ~= nil and args[1]:match("%d+[;, ]%d+") then
+	input = args[1]
+elseif args[1] ~= nil or args[1] == "custom" then
 	repeat
-		io.write("Input (row column): ")
+		io.write("Input (row,column): ")
 		input = io.read()
-	until input:match("%d+ %d+") or input == "default"
+		if input == "exit" then
+			error("exit")
+		elseif input == "reload" then
+			error("reload")
+		elseif input == "default" then
+			input = "3010,3019"
+			print("Using 3010,3019...")
+		end
+	until input:match("%d+[;, ]%d+")
 end
 
-if input:match("%d+ %d+") then
-	row,column = tonumber(table.unpack(string.cut(input)))
-end
+row,column = tonumber(table.unpack(string.cut(input,"[;, ]")))
 
 repeat
 	if yCur == 1 then

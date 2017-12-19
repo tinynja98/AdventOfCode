@@ -1,3 +1,4 @@
+if getScriptDir == nil then error("loader.lua can't be run alone. Please execute main.lua") end
 if loader then io.write("Reloaded loader.lua.\n") end
 loader = true
 
@@ -9,62 +10,78 @@ local function parseError(msg)
 	end
 end
 
+function checkYearAvailability(y,out)
+	if io.popen("if exist \""..rootPath..y.."\" echo true"):read("*l") then
+		local dayList = {}
+		for l in io.popen("dir \""..rootPath..y.."\" /b /ad"):lines() do
+			if l:gsub("Day %d+","") == "" then
+				table.insert(dayList,l:match("%d+"))
+			end
+		end
+		for i = 1,#dayList do
+			if checkDayAvailability(y,dayList[i]) then
+				return true
+			end
+		end
+	end
+	if out then
+		io.write("Year "..y.." has no solution yet.\n\n")
+		sleep(0.5)
+	end
+	return false
+end
+
+function checkDayAvailability(y,d,out)
+	if io.popen("if exist \""..rootPath..y.."/Day "..d.."/day"..d..".lua\" echo true"):read("*l") then
+		return true
+	end
+	if out then
+		io.write("Day "..d.." ("..y..") has no solution yet.\n\n")
+		sleep(0.5)
+	end
+	return false
+end
+
 ------------CODE------------
 local args,pwd = {...},getScriptDir(debug.getinfo(1).source)
 
-repeat
-  local yearList,dayList,inputs,read,year,exit = {},{},{},"","",false
-  if args[1] == nil then
-    repeat
-      io.write("What year's puzzles are we solving? ")
-      read = io.read()
-      inputs = string.cut(read," ")
-      if tonumber(inputs[1]) ~= nil then
-        for dirName in io.popen("dir \""..rootPath.."\" /B /AD"):lines() do
-          if dirName:match("[0-9]+") then
-            table.insert(yearList,dirName)
-          end
-        end
-			end
-			if inputs[1] == "exit" then
+while not exit do
+	local yearList,dayList,input,year,day,exit = {},{},false,false,false
+	if args[1] == nil or not checkYearAvailability(args[1],true) then
+		repeat
+			io.write("What year's puzzles are we solving? ")
+			input = string.cut(io.read()," ")
+			if input[1] == "exit" then
 				error("exit")
-			elseif inputs[1] == "reload" then
+			elseif input[1] == "reload" then
 				error("reload")
-			elseif not table.find(yearList,inputs[1]) then
-				io.write("That year has not yet been solved.\n\n")
+			elseif tonumber(input[1]) ~= nil and checkYearAvailability(input[1],true) then
+				year = input[1]
+				table.remove(input,1)
 			end
-    until (tonumber(inputs[1]) ~= nil and table.find(yearList,inputs[1])) or exit
-    year = inputs[1]
-    table.remove(inputs,1)
-  else
-    year = args[1]
-  end
-  if (inputs[1] == nil or tonumber(inputs[1]) == nil) and not exit then
-    repeat
-      io.write("What day do you want to solve? ")
-      read = io.read()
-			inputs = string.cut(read," ")
-			if inputs[1] == "exit" then
-				error("exit")
-			elseif inputs[1] == "reload" then
-				error("reload")
-			end
-    until tonumber(inputs[1]) ~= nil or exit
+		until year
+	else
+		year = args[1]
+		input = {table.unpack(args,2)}
 	end
-	if not exit then
-		for dirName in io.popen("dir \""..rootPath..year.."\" /B /AD"):lines() do
-			if string.match(dirName,"Day [0-9]+") then
-				table.insert(dayList,dirName)
+	if input[1] == nil or tonumber(input[1]) == nil or not checkDayAvailability(year,input[1],true) then
+		repeat
+			io.write("What day ("..year..") do you want to solve? ")
+			input = string.cut(io.read()," ")
+			if input[1] == "exit" then
+				error("exit")
+			elseif input[1] == "reload" then
+				error("reload")
+			elseif tonumber(input[1]) ~= nil and checkDayAvailability(year,input[1],true) then
+				day = input[1]
 			end
-		end
-    local dayFolder = "Day "..inputs[1]
-    if table.find(dayList,dayFolder) and io.popen("if exist \""..rootPath..year.."/"..dayFolder.."/day"..inputs[1]..".lua\" echo true"):read("*l") then
-			io.write("\n")
-			local dump,result = xpcall(loadfile(rootPath..year.."/"..dayFolder.."/day"..inputs[1]..".lua"),parseError,table.unpack(inputs,2))
-			if result == "reload" then error("reload") end
-    else
-      print("That day has not yet been solved.")
-    end
-    io.write("\n")
-  end
-until exit
+		until day
+	else
+		day = input[1]
+	end
+	table.remove(input,1)
+	io.write("\n")
+	local result = select(2,xpcall(loadfile(rootPath..year.."/Day "..day.."/day"..day..".lua"),parseError,table.unpack(input)))
+	if result == "reload" then error("reload") end
+	io.write("\n")
+end

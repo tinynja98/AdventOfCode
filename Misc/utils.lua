@@ -117,3 +117,8 @@ function table.find(t,value,kv)
 	end
 	return false
 end
+
+function sleep(n)  -- seconds
+	local start = os.clock()
+  while os.clock()-start <= n do end
+end
