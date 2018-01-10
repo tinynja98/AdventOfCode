@@ -42,11 +42,31 @@ function checkDayAvailability(y,d,out)
 	return false
 end
 
-------------CODE------------
-local args,pwd = {...},getScriptDir(debug.getinfo(1).source)
+function testEnvironment(...)
+	repeat
+		io.write("--------Tests--------\n")
+		xpcall(loadfile(rootPath.."Misc/tests.lua"),parseError,table.unpack({...}))
+		io.write("---------End---------\n")
+		io.write("Test input (\"advent\" to solve days): ")
+		input = string.cut(io.read()," ")
+		if input[1] == "exit" then
+			error("exit")
+		elseif input[1] == "reload" then
+			error("reload")
+		end
+	until input[1] == "advent"
+end
 
-while not exit do
-	local yearList,dayList,input,year,day,exit = {},{},false,false,false
+------------CODE------------
+local args,pwd = arg,getScriptDir(debug.getinfo(1).source)
+
+while true do
+	local yearList,dayList,input,year,day = {},{},false,false
+	if args[1] ~= nil and args[1]:gsub("test[s]?","") == "" then
+		arg = table.shift({table.unpack(arg,-1,0)},-2)
+		testEnvironment(table.unpack(args,2))
+		args = {}
+	end
 	if args[1] == nil or not checkYearAvailability(args[1],true) then
 		repeat
 			io.write("What year's puzzles are we solving? ")
@@ -55,6 +75,8 @@ while not exit do
 				error("exit")
 			elseif input[1] == "reload" then
 				error("reload")
+			elseif input[1]:match("test[s]?") then
+				testEnvironment()
 			elseif tonumber(input[1]) ~= nil and checkYearAvailability(input[1],true) then
 				year = input[1]
 				table.remove(input,1)
@@ -72,6 +94,8 @@ while not exit do
 				error("exit")
 			elseif input[1] == "reload" then
 				error("reload")
+			elseif input[1]:match("test[s]?") then
+				testEnvironment()
 			elseif tonumber(input[1]) ~= nil and checkDayAvailability(year,input[1],true) then
 				day = input[1]
 			end

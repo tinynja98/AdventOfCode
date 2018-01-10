@@ -1,5 +1,3 @@
-local args = {...}
-
 local function parseError(msg)
 	if msg:match("exit") or msg:match("interrupted!") then
 		return true
@@ -62,5 +60,5 @@ rootPath,cut,getScriptDir = getScriptDir(),nil,nil
 repeat
 	xpcall(loadfile(rootPath.."Misc/path.lua"),parseError)
 	xpcall(loadfile(rootPath.."Misc/utils.lua"),parseError)
-	local exit = select(2,xpcall(loadfile(rootPath.."Misc/loader.lua"),parseError,table.unpack(args,1)))
+	local exit = select(2,xpcall(loadfile(rootPath.."Misc/loader.lua"),parseError,table.unpack(arg,1)))
 until	exit

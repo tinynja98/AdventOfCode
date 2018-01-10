@@ -91,3 +91,8 @@ for k,v in pairs(tree) do
 		break
 	end
 end
+
+for k,v in orderedPairs(tree) do
+	io.write(k)
+	if io.read() == "exit" then error("exit") end
+end

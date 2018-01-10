@@ -1,3 +1,12 @@
-print(arg[1])
-io.read()
-dofile("c:/Users/Amine/Documents/Dev Projects/Lua/AdventOfCode/Misc/tests.lua")
+x = {"a","b","c",a=5}
+
+for k,v in pairs(x) do
+	print(k,v)
+end
+
+table.shift(x,-2)
+io.write("\n")
+
+for k,v in orderedPairs(x) do
+	print(k,v)
+end
