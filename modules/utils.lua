@@ -44,13 +44,13 @@ end
 function string.cut(s,pattern,delpattern,i)
   if type(s) ~= "string" then error("bad argument #1 to 'string.cut' (string expected, got "..type(t)..")") end
   if type(pattern) ~= "string" then error("bad argument #2 to 'string.cut' (string expected, got "..type(t)..")") end
-	local i2 = 0
+	local i3 = 0
 	if delpattern == nil then delpattern = true end
 	if tonumber(i) ~= nil then i2 = i-1 end
 	local cutstring = {}
 	repeat
-		local i1 = i2
-    i2 = s:find(pattern,i1+1)
+		local i1 = i3
+    i2,i3 = s:find(pattern,i1+1)
 		if i2 == nil then i2 = s:len()+1 end
 		if delpattern then
 			table.insert(cutstring,s:sub(i1+1,i2-1))

@@ -1,4 +1,4 @@
-pwd = getScriptDir(debug.getinfo(1).source)
+pwd = fs.getscriptdir(debug.getinfo(1).source)
 local file,input = io.open(pwd.."input.txt"),""
 
 function validateBanks(b)

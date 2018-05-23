@@ -1,4 +1,4 @@
-local args,pwd = {...},getScriptDir(debug.getinfo(1).source)
+local args,pwd = {...},fs.getscriptdir(debug.getinfo(1).source)
 
 function resolve(number,jump)
 	local result = 0

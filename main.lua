@@ -1,3 +1,19 @@
+local tempwd = debug.getinfo(1).source:sub(2):match('.*/') or ''
+tempwd = tempwd..'/'
+
+require(tempwd..'modules/utils')
+fs = require(tempwd..'modules/filesystem')
+
+rootpath,tempwd = fs.getscriptdir(debug.getinfo(1).source),nil
+
+local function parseError(msg)
+	if msg:match("reload") then
+		return "reload"
+	elseif not msg:match("exit") then
+		print(msg)
+	end
+end
+
 local function parseError(msg)
 	if msg:match("exit") or msg:match("interrupted!") then
 		return true
@@ -8,57 +24,104 @@ local function parseError(msg)
 	return false
 end
 
-local function cut(s,pattern,delpattern,i)
-  if type(s) ~= "string" then error("bad argument #1 to 'string.cut' (string expected, got "..type(t)..")") end
-  if type(pattern) ~= "string" then error("bad argument #2 to 'string.cut' (string expected, got "..type(t)..")") end
-	local i2 = 0
-	if delpattern == nil then delpattern = true end
-	if tonumber(i) ~= nil then i2 = i-1 end
-	local cutstring = {}
-	repeat
-		local i1 = i2
-    i2 = s:find(pattern,i1+1)
-		if i2 == nil then i2 = s:len()+1 end
-		if delpattern then
-			table.insert(cutstring,s:sub(i1+1,i2-1))
-		else
-			table.insert(cutstring,s:sub(i1,i2-1))
-		end
-	until i2 == s:len()+1
-  return cutstring
-end
+--------------------------------
 
-local function getScriptDir(source) --requires: cut
-	if source == nil then
-		source = debug.getinfo(1).source
-	end
-	local pwd = ""
-	local pwd1 = (io.popen("echo %cd%"):read("*l")):gsub("\\","/")
-	local pwd2 = source:sub(2):gsub("\\","/")
-	if pwd2:sub(2,3) == ":/" then
-		pwd = pwd2:sub(1,pwd2:find("[^/]*%.lua")-1)
-	else
-		local path1 = cut(pwd1:sub(4),"/")
-		local path2 = cut(pwd2,"/")
-		for i = 1,#path2-1 do
-			if path2[i] == ".." then
-				table.remove(path1)
-			else
-				table.insert(path1,path2[i])
+function checkYearAvailability(y,out)
+	if io.popen("if exist \""..rootpath..y.."\" echo true"):read("*l") then
+		local dayList = {}
+		for l in io.popen("dir \""..rootpath..y.."\" /b /ad"):lines() do
+			if l:gsub("Day %d+","") == "" then
+				table.insert(dayList,l:match("%d+"))
 			end
 		end
-		pwd = pwd1:sub(1,3)
-		for i = 1,#path1 do
-			pwd = pwd..path1[i].."/"
+		for i = 1,#dayList do
+			if checkDayAvailability(y,dayList[i]) then
+				return true
+			end
 		end
 	end
-	return pwd
+	if out then
+		io.write("Year "..y.." has no solution yet.\n\n")
+		sleep(0.5)
+	end
+	return false
 end
 
-rootPath,cut,getScriptDir = getScriptDir(),nil,nil
+function checkDayAvailability(y,d,out)
+	if io.popen("if exist \""..rootpath..y.."/Day "..d.."/day"..d..".lua\" echo true"):read("*l") then
+		return true
+	end
+	if out then
+		io.write("Day "..d.." ("..y..") has no solution yet.\n\n")
+		sleep(0.5)
+	end
+	return false
+end
 
-repeat
-	xpcall(loadfile(rootPath.."Misc/path.lua"),parseError)
-	xpcall(loadfile(rootPath.."Misc/utils.lua"),parseError)
-	local exit = select(2,xpcall(loadfile(rootPath.."Misc/loader.lua"),parseError,table.unpack(arg,1)))
-until	exit
+function testEnvironment(...)
+	local input = {...}
+	repeat
+		io.write("--------Tests--------\n")
+		xpcall(loadfile(rootpath.."modules/tests.lua"),parseError,table.unpack(input))
+		io.write("---------End---------\n")
+		io.write('Test input (or "exit"): ')
+		input = io.read()
+		if input ~= '' then
+			input = string.cut(input," ")
+		else
+			input = {}
+		end
+	until input[1] == "exit"
+end
+
+------------CODE------------
+
+local args = arg
+
+while not exit do
+	local yearList,dayList,input,year,day,skip = {},{},nil,false,false,false
+	if args[1] ~= nil and args[1]:gsub("test[s]?","") == "" then
+		arg = table.shift({table.unpack(arg,-1,0)},-2)
+		testEnvironment(table.unpack(args,2))
+		args = {}
+	end
+	if args[1] == nil or not checkYearAvailability(args[1],true) then
+		repeat
+			io.write("What year's puzzles are we solving? ")
+			input = string.cut(io.read()," ")
+			if input[1] == "exit" then
+				exit,skip = true,true
+			elseif input[1]:match("test[s]?") then
+				testEnvironment(table.unpack(input,2))
+			elseif tonumber(input[1]) ~= nil and checkYearAvailability(input[1],true) then
+				year = input[1]
+				table.remove(input,1)
+			end
+		until year or skip
+	else
+		year = args[1]
+		input = {table.unpack(args,2)}
+	end
+	if not skip and (input[1] == nil or tonumber(input[1]) == nil or not checkDayAvailability(year,input[1],true)) then
+		repeat
+			io.write("What day ("..year..") do you want to solve? ")
+			input = string.cut(io.read()," ")
+			if input[1] == "exit" then
+				exit,skip = true,true
+			elseif input[1] == "back" then
+				skip = true
+			elseif input[1]:match("test[s]?") then
+				testEnvironment()
+			elseif tonumber(input[1]) ~= nil and checkDayAvailability(year,input[1],true) then
+				day = input[1]
+			end
+		until day or skip
+	else
+		day = input[1]
+	end
+	if not skip then
+		io.write("\n")
+		local result = select(2,xpcall(loadfile(rootpath..year.."/Day "..day.."/day"..day..".lua"),parseError,table.unpack(input)))
+		io.write("\n")
+	end
+end

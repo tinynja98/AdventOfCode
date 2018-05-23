@@ -1,4 +1,4 @@
-local pwd = getScriptDir(debug.getinfo(1).source)
+local pwd = fs.getscriptdir(debug.getinfo(1).source)
 local memory1,k1,temp1,steps1 = {},1,0,0
 local memory2,k2,temp2,steps2 = {},1,0,0
 

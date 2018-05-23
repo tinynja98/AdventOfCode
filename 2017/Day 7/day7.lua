@@ -1,4 +1,4 @@
-local pwd,input,inputs = getScriptDir(debug.getinfo(1).source),"",{}
+local pwd,input,inputs = fs.getscriptdir(debug.getinfo(1).source),"",{}
 local file = io.open(pwd.."input.txt")
 
 if file then 

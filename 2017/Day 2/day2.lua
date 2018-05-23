@@ -1,4 +1,4 @@
-local pwd = getScriptDir(debug.getinfo(1).source)
+local pwd = fs.getscriptdir(debug.getinfo(1).source)
 
 local input = io.open(pwd.."input.txt"):read("*a")
 local data = string.cut(input,"\n")
