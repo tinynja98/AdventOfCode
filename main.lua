@@ -7,21 +7,7 @@ fs = require(tempwd..'modules/filesystem')
 rootpath,tempwd = fs.getscriptdir(debug.getinfo(1).source),nil
 
 local function parseError(msg)
-	if msg:match("reload") then
-		return "reload"
-	elseif not msg:match("exit") then
-		print(msg)
-	end
-end
-
-local function parseError(msg)
-	if msg:match("exit") or msg:match("interrupted!") then
-		return true
-	elseif not msg:match("reload") then
-		print(msg)
-	end
-	io.write("\n")
-	return false
+	print(msg)
 end
 
 --------------------------------
@@ -120,6 +106,7 @@ while not exit do
 		day = input[1]
 	end
 	if not skip then
+		table.remove(input,1)
 		io.write("\n")
 		local result = select(2,xpcall(loadfile(rootpath..year.."/Day "..day.."/day"..day..".lua"),parseError,table.unpack(input)))
 		io.write("\n")

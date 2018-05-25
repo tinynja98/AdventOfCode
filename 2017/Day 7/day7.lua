@@ -1,6 +1,35 @@
 local pwd,input,inputs = fs.getscriptdir(debug.getinfo(1).source),"",{}
 local file = io.open(pwd.."input.txt")
 
+local function verify_masses(t)
+	local masses,index = {},{}
+	for k,v in pairs(t) do
+		if index[k:gsub('_children','')] == nil then
+			index[k:gsub('_children','')] = #masses+1
+			masses[index[k:gsub('_children','')]] = 0
+			masses[-index[k:gsub('_children','')]] = k:gsub('_children','')
+		end
+		if type(v) == 'number' then
+			masses[index[k:gsub('_children','')]] = masses[index[k:gsub('_children','')]]+v
+		elseif type(v) == 'table' then
+			local children_result = verify_masses(v)
+			if type(children_result) == 'string' then
+				return children_result
+			elseif type(children_result) == 'number' then
+				masses[index[k:gsub('_children','')]] = masses[index[k:gsub('_children','')]]+children_result
+			end
+		end
+	end
+	local sum = 0
+	for i = 1,#masses do
+		sum = sum+masses[i]
+		if masses[i] ~= masses[(i-2)%#masses+1] and masses[i] ~= masses[i%#masses+1] then
+			return masses[-i]..':'..(masses[i%#masses+1]-masses[i])
+		end
+	end
+	return sum
+end
+
 if file then 
 	if file:read("*a") ~= nil then
 		file:seek("set")
@@ -44,20 +73,20 @@ if #inputs == 0 then
 	until input == "stop" and #inputs > 0
 end
 
-local tree = {}
+local tree_1dim = {}
 for i = 1,#inputs do
 	local parent,weight,children,childrenDup,iofinterest = "",0,{},{},{}
 	parent = inputs[i]:match("%a+")
-	weight = inputs[i]:match("%d+")
+	weight = tonumber(inputs[i]:match("%d+"))
 	if inputs[i]:match("%->") then
 		local init = select(2,inputs[i]:find("%->"))
 		repeat
 			table.insert(children,inputs[i]:match("%a+",init))
-			table.insert(childrenDup,inputs[i]:match("%a+",init))
+			table.insert(childrenDup,children[#children])
 			init = select(2,inputs[i]:find("%a+",init))+1
 		until inputs[i]:match("%a+",init) == nil
 	end
-	for k,v in pairs(tree) do
+	for k,v in pairs(tree_1dim) do
 		if k:match(parent) then
 			parent = k
 		else
@@ -71,28 +100,37 @@ for i = 1,#inputs do
 			end
 		end
 	end
-	tree[parent] = weight
+	tree_1dim[parent] = weight
 	for i = 1,#childrenDup do
 		table.insert(iofinterest,childrenDup[i])
 	end
 	for i = 1,#iofinterest do
-		if tree[iofinterest[i]] then
-			tree[parent..":"..iofinterest[i]] = tree[iofinterest[i]]
-			tree[iofinterest[i]] = nil
+		if tree_1dim[iofinterest[i]] then
+			tree_1dim[parent..":"..iofinterest[i]] = tree_1dim[iofinterest[i]]
+			tree_1dim[iofinterest[i]] = nil
 		else
-			tree[parent..":"..iofinterest[i]] = 0
+			tree_1dim[parent..":"..iofinterest[i]] = 0
 		end
 	end
 end
 
-for k,v in pairs(tree) do
-	if k:gsub("%a+","",1) == "" then
-		print("Part 1: "..k)
-		break
+local tree,part1 = {},nil
+for k,v in pairs(tree_1dim) do
+	local disks,latest_table = string.cut(k,':'),tree
+	for i = 1,#disks do
+		part1 = part1 or disks[i]
+		if latest_table[disks[i]..'_children'] == nil then
+			latest_table[disks[i]..'_children'] = {}
+		end
+		if i ~= #disks then
+			latest_table = latest_table[disks[i]..'_children']
+		end
 	end
+	latest_table[disks[#disks]] = v
 end
 
-for k,v in orderedPairs(tree) do
-	io.write(k)
-	if io.read() == "exit" then error("exit") end
-end
+local part2 = verify_masses(tree)
+part2 = tonumber(part2:sub(part2:find(':')+1))+tree_1dim[table.find(tree,part2:sub(1,part2:find(':')-1),'k'):gsub('_children',''):gsub('%.',':')]
+
+print('Part 1: '..part1)
+print('Part 2: '..part2)

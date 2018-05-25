@@ -32,6 +32,21 @@ function tonumber(...)
 	return table.unpack(numbers)
 end
 
+function math.sum(...)
+	local args,sum = {...},0
+	for i = 1,#args do
+		print(type(args[i]))
+		if type(args[i]) == 'table' then
+			sum = sum+math.sum(args[i])
+		elseif type(args[i]) == 'number' then
+			sum = sum+args[i]
+		else
+			error("bad argument #"..i.." to 'sum' (number expected, got "..type(args[i])..")")
+		end
+	end
+	return sum
+end
+
 if string._byte == nil then string._byte = string.byte end
 function string.byte(s,i,j)
 	local ascii = {string._byte(s,i,j)}
@@ -106,28 +121,30 @@ function table.shift(t,n)
 	return t
 end
 
+-- Returns all the indexes where "value" can be found. "kv" is for precising
+-- if search should be done within the keys or within the values. To get all
+-- index inside a table one should use indexes = {table.find(t,value,kv)}
 function table.find(t,value,kv)
   if type(t) ~= "table" then error("bad argument #1 to 'table.find' (table expected, got "..type(t)..")") end
 	if type(value) == nil then error("bad argument #2 to 'table.find' (value expected, got "..type(value)..")") end
-	if type(kv) ~= "string" then kv = "v" end
+	if kv == nil or not kv:match('[kv]') then
+		kv = 'v'
+	end
 	local indexes = {}
-	if t ~= nil and value ~= nil then
-		for k,v in pairs(t) do
-			if (kv:match("k") and k == value) or (kv:match("v") and v == value) then
-				table.insert(indexes,k)
-			elseif type(v) == "table" then
-				local sufixes = {table.find(t[k],value)}
-				if sufixes then
-					for i = 1,#sufixes do
-						table.insert(indexes,k.."."..sufixes[i])
-					end
+	for k,v in pairs(t) do
+		if type(v) == 'table' then
+			local suffixes = {table.find(v,value,kv)}
+			if suffixes[1] then
+				for i = 1,#suffixes do
+					table.insert(indexes,k..'.'..suffixes[i])
 				end
 			end
+		elseif (kv:match('k') and k == value) or (kv:match('v') and v == value) then
+			table.insert(indexes,k)
 		end
-		if next(indexes) ~= nil then
-			table.sort(indexes,alphabetical)
-			return table.unpack(indexes)
-		end
+	end
+	if next(indexes) ~= nil then
+		return table.unpack(indexes)
 	end
 	return false
 end

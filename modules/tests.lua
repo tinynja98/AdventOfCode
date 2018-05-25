@@ -1,5 +1,3 @@
-args = {...}
+x = {'a','b','c'}
 
-for k,v in pairs(args) do--debug
-	print(k,v)
-end
+print(table.find(x,'c'))
