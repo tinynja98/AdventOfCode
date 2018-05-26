@@ -9,7 +9,7 @@ local function getmoves(x,y)
 	if x > math.abs(y*2) then
 		moves = x
 	else
-		moves = math.abs(x)+(math.abs(y)-2*math.abs(x))
+		moves = math.abs(y)-math.abs(x) --Originally math.abs(x)+(math.abs(y)-2*math.abs(x))
 	end
 	return moves
 end
