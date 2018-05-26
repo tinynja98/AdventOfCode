@@ -1,3 +1,7 @@
-x = {'a','b','c'}
+x = 'a,b,c'
 
-print(table.find(x,'c'))
+y = x:cut(',')
+
+for k,v in pairs(y) do
+	print(k,v)
+end
